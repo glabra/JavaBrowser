@@ -1,0 +1,28 @@
+{
+  "manifest_version": 2,
+
+  "name": "ジャバブラウザ",
+  "short_name": "ジャバ",
+  "description": "Firefoxにもジャバが来ます。",
+  "version": "1.1",
+
+  "applications": {
+    "gecko": {
+      "id": "javabrowser@kamikakushi.net"
+    }
+  },
+
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+
+  "chrome_url_overrides" : {
+    "newtab": "newtab.html"
+  },
+
+  "permissions": [
+    "https://arigato-java.download/kakugen.json"
+  ]
+}
