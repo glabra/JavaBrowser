@@ -10,7 +10,6 @@ body {
 
   /* centering */
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   position: absolute;
@@ -18,33 +17,6 @@ body {
   padding: 0;
   width: 100%;
   height: 100%;
-}
-
-/* loading white page */
-#loading {
-  background-color: white;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 120%;
-  z-index: 1;
-}
-
-#loading.loaded {
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 1s ease-out, visibility 1s;
-}
-
-/* quote style */
-blockquote {
-  text-align: justify;
-  text-decoration: none;
-
-  line-height: 150%;
-  /* バランスを取るために、少し上げる */
-  padding-bottom: 12vh;
 
   /* 文字の縁取り */
   text-shadow:
@@ -58,8 +30,26 @@ blockquote {
     1px  1px  white;
 }
 
-#quote {
+p, span {
   white-space: pre-line;
+}
+
+#loading {
+  animation: blink ease-in-out 1s infinite alternate;
+  margin: 1em;
+  text-align: center;
+  padding-bottom: 12vh;
+}
+
+#wrapper {
+  visibility: collapse;
+  opacity: 0;
+  transition: opacity 1s ease-in;
+
+  text-align: justify;
+  line-height: 150%;
+  /* バランスを取るために、少し上げる */
+  padding-bottom: 12vh;
 }
 
 #quote:before {
@@ -72,4 +62,9 @@ blockquote {
 
 #cite {
   margin-left: 1ex;
+}
+
+@keyframes blink {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

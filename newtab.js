@@ -1,35 +1,12 @@
 "use strict";
 
-const KAKUGEN_ROWS_MIN = 6;
-const KAKUGEN_ROWS_MAX = 25;
-const KAKUGEN_COLS_MIN = 1;
-const KAKUGEN_COLS_MAX = 8;
-
 const API_ENDPOINT = "https://arigato-java.download/kakugen.json";
 const FALLBACK_KAKUGEN = {
   t: "ジャバ.lang.NullPointerException\nat ジャバブラウザ.main(...)"
 };
 
-const utils = {
-  sanitizeURL (url) {
-    try {
-      const u = new URL(url);
-      if (u.protocol === "http:" || u.protocol === "https:") {
-        return u.href;
-      }
-      return null;
-    } catch (e) {
-      return null;
-    }
-  },
-
-  clamp (d, min, max) {
-    return Math.max(Math.min(d, min), max);
-  }
-};
-
 const newtab = {
-  container: null,
+  wrapper: null,
   kakugen: null,
 
   /**
@@ -38,7 +15,9 @@ const newtab = {
    * @returns {void}
    */
   async init () {
-    fetch(API_ENDPOINT)
+    newtab.wrapper = document.getElementById("wrapper");
+
+    fetch(API_ENDPOINT, {cache: "force-cache"})
       .then(r => r.json())
       .then(d => d[Math.floor(Math.random() * d.length)])
       .catch(e => {
@@ -46,7 +25,7 @@ const newtab = {
         return FALLBACK_KAKUGEN;
       }).then(newtab.assign)
       .then(newtab.scale)
-      .then(() => document.getElementById("loading").classList.add("loaded"));
+      .then(newtab.show);
   },
 
   /**
@@ -56,8 +35,6 @@ const newtab = {
    * @returns {void}
    */
   async assign (j) {
-    newtab.container = document.getElementById("container");
-
     if (j.t) {
       newtab.kakugen = j.t;
 
@@ -66,7 +43,7 @@ const newtab = {
     }
 
     // Kakugen's cite
-    const u = utils.sanitizeURL(j.u);
+    const u = newtab._sanitizeURL(j.u);
     if (u) {
       const ref = document.getElementById("cite");
       ref.href = u;
@@ -80,19 +57,49 @@ const newtab = {
    * @returns {void}
    */
   async scale () {
-    if (!newtab.kakugen || !newtab.container) {
-      return;
+    if (!newtab.kakugen || !newtab.wrapper) {
+      throw new Error("newtab isn't initialized.");
     }
 
     const rows = Math.max(...newtab.kakugen.split("\n").map(s => s.length));
     const cols = (newtab.kakugen.match(/\n/g) || []).length + 1;
 
+    // XXX: This is magic
     const s = Math.min(
-      window.innerWidth / utils.clamp(rows, KAKUGEN_ROWS_MIN, KAKUGEN_ROWS_MAX),
-      window.innerHeight / utils.clamp(cols, KAKUGEN_COLS_MIN, KAKUGEN_COLS_MAX)
+      window.innerWidth / Math.max(Math.min(rows, 6), 25),
+      window.innerHeight / cols / 2
     );
-    newtab.container.style.fontSize = s + "px";
-  }
+    newtab.wrapper.style.fontSize = s + "px";
+  },
+
+  /**
+   * hide loading message and show a Kakugen
+   * 
+   * @returns {void}
+   */
+  async show () {
+    document.getElementById("loading").style.display = "none";
+    newtab.wrapper.style.visibility = "visible";
+    newtab.wrapper.style.opacity = 1;
+  },
+
+  /**
+   * sanitize URL string
+   * 
+   * @param {String} url - url-like string
+   * @returns {String|null}
+   */
+  _sanitizeURL (url) {
+    try {
+      const u = new URL(url);
+      if (u.protocol === "http:" || u.protocol === "https:") {
+        return u.href;
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  },
 };
 
 newtab.init();
