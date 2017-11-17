@@ -4,7 +4,7 @@
   "name": "ジャバブラウザ",
   "short_name": "ジャバ",
   "description": "Firefoxにもジャバが来ます。",
-  "version": "1.1",
+  "version": "1.2",
 
   "applications": {
     "gecko": {
